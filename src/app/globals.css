@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Cores gerais */
+  --background: #525937;
+  --background-muted: #3c4129;
+  --background-strong-muted: rgb(41, 44, 28);
+  --foreground: #ffffff;
+  --primary: #D39A34;
+  --link: #9ca3af;
+  --success: #7DAE50;
+  --fail: #C9664B;
+  --cancel: #C9664B;
+
+  /* Cores dos tipos de placas */
+  --plate-standard: #7DAE50;
+  --plate-partner: #4FA2A0;
+  --plate-event: #D39A34;
+  --plate-owner: #2E2E2E;
+
+  /* Cores dos tipos pagamentos */
+  --payment-granted: #7DAE50;
+  --payment-pending: #C9664B;
+  --payment-expired: #6E6E6E;
+
+  /* Valores Padrões */
+  --pad: 20px;
+  --conpad: 15px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-muted: var(--background-muted);
+  --color-background-strong-muted: var(--background-strong-muted);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-link: var(--link);
+  --color-success: var(--success);
+  --color-fail: var(--fail);
+  --color-cancel: var(--cancel);
+  --color-plate-standard: var(--plate-standard);
+  --color-plate-partner: var(--plate-partner);
+  --color-plate-event: var(--plate-event);
+  --color-plate-owner: var(--plate-owner);
+  --color-payment-granted: var(--payment-granted);
+  --color-payment-pending: var(--payment-pending);
+  --color-payment-expired: var(--payment-expired);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --spacing-pad: var(--pad);
+  --spacing-conpad: var(--conpad);
+}
+
+body {
+  color: var(--foreground);
+  font-family: "Quicksand", sans-serif;
+
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(82, 89, 55, 1) 80%),
+    url("../../public/background-image.svg");
+
+  background-size: cover;
+  background-color: rgba(82, 89, 55);
+  overflow-x: hidden;
+}

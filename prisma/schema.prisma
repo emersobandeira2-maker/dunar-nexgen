@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo de Usuários (Clientes)
+model User {
+  id               String        @id @default(uuid())
+  name             String
+  email            String        @unique
+  phone            String?
+  documentType     String?       // "CPF" ou "CNPJ"
+  document         String?       // CPF ou CNPJ
+  passwordHash     String
+  resetToken       String?       // Token para recuperação de senha
+  resetTokenExpiry DateTime?     // Validade do token
+  lifetimePrize    Boolean       @default(false) // Prêmio Vitalício (6 placas grátis/dia)
+  vehicles         Vehicle[]
+  reservations     Reservation[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+// Modelo de Administradores
+model Admin {
+  id               String    @id @default(uuid())
+  username         String    @unique
+  email            String    @unique
+  phone            String?
+  passwordHash     String
+  role             String    @default("FUNCIONARIO") // "SUPERADMIN", "ADMIN", "FUNCIONARIO"
+  isSuperAdmin     Boolean   @default(false) // Flag para proteger superadmin
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorMethod  String?   // "email" ou "sms"
+  twoFactorCode    String?
+  twoFactorExpiry  DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+// Modelo de Placas/Veículos
+model Vehicle {
+  id           String        @id @default(uuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plate        String        @unique
+  plateRole    String        // 'Comum', 'Cooperado', 'Evento', 'Proprietario'
+  reservations Reservation[]
+  tickets      Ticket[]
+  createdAt    DateTime      @default(now())
+}
+
+// Modelo de Reservas
+model Reservation {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleId  String
+  vehicle    Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  passengers Int
+  startDate  DateTime
+  endDate    DateTime
+  status     String   @default("pending") // 'pending', 'confirmed', 'cancelled'
+  tickets    Ticket[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Modelo de Tickets (Pagamentos/Entradas)
+model Ticket {
+  id              String       @id @default(uuid())
+  reservationId   String?
+  reservation     Reservation? @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  vehicleId       String
+  vehicle         Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  passengers      Int
+  useDate         DateTime
+  paymentStatus   String       @default("Pendente") // 'Pendente', 'Pago'
+  ticketStatus    String       @default("Aguardando Liberação") // 'Aguardando Liberação', 'Liberado', 'Expirado'
+  paymentMethod   String?
+  paymentId       String?
+  price           Float?       // Valor do ticket
+  isFree          Boolean      @default(false) // Indica se foi grátis (prêmio vitalício)
+  releasedBy      String?      // ID do admin/funcionário que liberou
+  releasedAt      DateTime?    // Data/hora da liberação
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([paymentStatus])
+  @@index([ticketStatus])
+  @@index([useDate])
+  @@index([createdAt])
+  @@index([vehicleId])
+}
