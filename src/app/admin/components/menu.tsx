@@ -4,7 +4,7 @@ import PaymentIcon from "public/icons/payment-icon.svg"
 import DataIcon from "public/icons/data-icon.svg"
 import UserIcon from "public/icons/user-list-icon.svg"
 import RegisterIcon from "public/icons/register-icon.svg"
-import CheckIcon from "public/icons/check-icon.svg"
+// import CheckIcon from "public/icons/check-icon.svg"
 import HoverScaleAnimation from "@/components/animations/HoverScaleAnimation"
 
 export default function Menu() {
@@ -43,6 +43,33 @@ export default function Menu() {
                     <span className="flex justify-between">
                         <span>Cadastros de Usuários</span>
                         <Image src={UserIcon} alt="" />
+                    </span>
+                </Link>
+            </HoverScaleAnimation>
+
+            <HoverScaleAnimation>
+                <Link href={"/admin/cooperados"}>
+                    <span className="flex justify-between">
+                        <span>🤝 Cooperados</span>
+                        <Image src={UserIcon} alt="" />
+                    </span>
+                </Link>
+            </HoverScaleAnimation>
+
+            <HoverScaleAnimation>
+                <Link href={"/admin/eventos"}>
+                    <span className="flex justify-between">
+                        <span>🎉 Eventos</span>
+                        <Image src={DataIcon} alt="" />
+                    </span>
+                </Link>
+            </HoverScaleAnimation>
+
+            <HoverScaleAnimation>
+                <Link href={"/admin/configuracoes"}>
+                    <span className="flex justify-between">
+                        <span>⚙️ Configurações</span>
+                        <Image src={DataIcon} alt="" />
                     </span>
                 </Link>
             </HoverScaleAnimation>

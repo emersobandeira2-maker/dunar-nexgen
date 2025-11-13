@@ -14,11 +14,18 @@ export interface AuthenticatedAdmin {
   isSuperAdmin: boolean
 }
 
-// Verificar token JWT e retornar dados do admin
+// Verificar token JWT do NextRequest e retornar dados do admin
 export async function verifyAdminToken(
-  token: string
-): Promise<AuthenticatedAdmin | null> {
+  request: NextRequest
+): Promise<{ authenticated: boolean; admin: AuthenticatedAdmin | null }> {
   try {
+    // Extrair token do cookie
+    const token = request.cookies.get('auth-token')?.value
+    
+    if (!token) {
+      return { authenticated: false, admin: null }
+    }
+
     const decoded = verify(token, JWT_SECRET) as any
     
     // Buscar admin no banco para garantir dados atualizados
@@ -33,17 +40,22 @@ export async function verifyAdminToken(
       },
     })
 
-    if (!admin) return null
+    if (!admin) {
+      return { authenticated: false, admin: null }
+    }
 
     return {
-      id: admin.id,
-      username: admin.username,
-      email: admin.email,
-      role: admin.role as AdminRole,
-      isSuperAdmin: admin.isSuperAdmin,
+      authenticated: true,
+      admin: {
+        id: admin.id,
+        username: admin.username,
+        email: admin.email,
+        role: admin.role as AdminRole,
+        isSuperAdmin: admin.isSuperAdmin,
+      }
     }
   } catch (error) {
-    return null
+    return { authenticated: false, admin: null }
   }
 }
 
@@ -51,25 +63,16 @@ export async function verifyAdminToken(
 export async function requireAuth(
   request: NextRequest
 ): Promise<AuthenticatedAdmin | NextResponse> {
-  const token = request.cookies.get('admin_token')?.value
+  const authResult = await verifyAdminToken(request)
 
-  if (!token) {
+  if (!authResult.authenticated || !authResult.admin) {
     return NextResponse.json(
       { error: 'Não autenticado' },
       { status: 401 }
     )
   }
 
-  const admin = await verifyAdminToken(token)
-
-  if (!admin) {
-    return NextResponse.json(
-      { error: 'Token inválido' },
-      { status: 401 }
-    )
-  }
-
-  return admin
+  return authResult.admin
 }
 
 // Middleware para verificar permissão específica

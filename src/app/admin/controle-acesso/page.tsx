@@ -106,14 +106,20 @@ export default function ControleAcessoPage() {
 
   const getRoleBadge = (role: string) => {
     const colors: Record<string, string> = {
-      'Comum': 'bg-gray-100 text-gray-800',
-      'Cooperado': 'bg-blue-100 text-blue-800',
-      'Evento': 'bg-purple-100 text-purple-800',
-      'Proprietario': 'bg-green-100 text-green-800'
+      'Comum': 'bg-blue-100 text-blue-800',
+      'Cooperado': 'bg-green-100 text-green-800',
+      'Evento': 'bg-yellow-100 text-yellow-800',
+      'Proprietario': 'bg-purple-100 text-purple-800'
+    }
+    const icons: Record<string, string> = {
+      'Comum': '🟦',
+      'Cooperado': '🟩',
+      'Evento': '🟨',
+      'Proprietario': '🟦'
     }
     return (
       <span className={`px-2 py-1 ${colors[role] || 'bg-gray-100 text-gray-800'} rounded text-xs font-medium`}>
-        {role}
+        {icons[role] || ''} {role}
       </span>
     )
   }

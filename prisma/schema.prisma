@@ -45,6 +45,44 @@ model Admin {
   updatedAt        DateTime  @updatedAt
 }
 
+// Modelo de Configurações do Sistema
+model SystemConfig {
+  id                String   @id @default(uuid())
+  normalAccessPrice Float    @default(50.00) // Preço padrão do acesso avulso
+  coopAccessPrice   Float    @default(40.00) // Preço padrão do cooperado
+  updatedBy         String?  // ID do admin que fez a última alteração
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// Modelo de Cooperados
+model Cooperative {
+  id        String    @id @default(uuid())
+  name      String    // Nome do cooperado ou cooperativa
+  vehicleId String    @unique
+  vehicle   Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  price     Float     @default(40.00) // Preço personalizado (padrão R$ 40)
+  isActive  Boolean   @default(true)
+  createdBy String?   // ID do admin que cadastrou
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// Modelo de Eventos
+model Event {
+  id          String    @id @default(uuid())
+  name        String    // Nome do evento
+  vehicleId   String    @unique
+  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  price       Float     // Preço personalizado definido pelo admin
+  eventDate   DateTime? // Data do evento (opcional)
+  description String?   @db.Text // Descrição do evento
+  isActive    Boolean   @default(true)
+  createdBy   String?   // ID do admin que cadastrou
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 // Modelo de Placas/Veículos
 model Vehicle {
   id           String        @id @default(uuid())
@@ -54,6 +92,8 @@ model Vehicle {
   plateRole    String        // 'Comum', 'Cooperado', 'Evento', 'Proprietario'
   reservations Reservation[]
   tickets      Ticket[]
+  cooperative  Cooperative?  // Relação opcional com cooperado
+  event        Event?        // Relação opcional com evento
   createdAt    DateTime      @default(now())
 }
 
@@ -87,6 +127,7 @@ model Ticket {
   paymentMethod   String?
   paymentId       String?
   price           Float?       // Valor do ticket
+  ticketType      String       @default("Normal") // 'Normal', 'Cooperado', 'Evento'
   isFree          Boolean      @default(false) // Indica se foi grátis (prêmio vitalício)
   releasedBy      String?      // ID do admin/funcionário que liberou
   releasedAt      DateTime?    // Data/hora da liberação
@@ -98,4 +139,5 @@ model Ticket {
   @@index([useDate])
   @@index([createdAt])
   @@index([vehicleId])
+  @@index([ticketType])
 }
